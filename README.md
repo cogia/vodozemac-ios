@@ -17,10 +17,17 @@ Installation
 
 ```shell
 rustup target add aarch64-apple-ios armv7-apple-ios armv7s-apple-ios x86_64-apple-ios i386-apple-ios 
-rustup target install armv7-linux-androideabi
 
 ```
 
+```shell
+cargo build --lib --target aarch64-apple-ios
+
+cargo install cargo-lipo
+
+cbindgen --config cbindgen.toml --lang c --crate vodozemac-ios --output vodozemac_ios.h
+
+```
 
 Usage
 ========
