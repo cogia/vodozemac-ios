@@ -25,8 +25,8 @@ execute_process(COMMAND ${RUSTC} --print sysroot OUTPUT_VARIABLE RUST_SYSROOT OU
 execute_process(COMMAND ${RUST_SYSROOT}/bin/cargo run --manifest-path ${CMAKE_SOURCE_DIR}/Cargo.toml -- ${CBINDGEN} -o ${HDR_FILE} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # Build the C wrapper library
-set(C_LIB_NAME vodozemac_ios C)
-set(C_LIB_SRC ${CMAKE_SOURCE_DIR}/vodozemac_ios.h)
+set(C_LIB_NAME vodozemac_ios)
+set(C_LIB_SRC ${CMAKE_SOURCE_DIR}/vodozemac_ios.c)
 add_library(${C_LIB_NAME} SHARED ${C_LIB_SRC})
 target_include_directories(${C_LIB_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(${C_LIB_NAME} ${RUST_LIB})
