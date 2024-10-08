@@ -3,8 +3,7 @@ use vodozemac::base64_decode;
 use vodozemac::olm::{InboundCreationResult, SessionConfig};
 use std::error::Error;
 use std::ffi::{c_char, CStr, CString};
-use std::ptr;
-use super::{session::Session, OlmMessage, CustomError, IdentityKeys, c_str_to_slice_array, VodozemacError};
+use super::{session::Session, OlmMessage, CustomError, IdentityKeys, c_str_to_slice_array, VodozemacError, CIdentityKeys};
 use std::string::String;
 
 
@@ -189,5 +188,21 @@ pub unsafe extern "C" fn accountPickle(ptr: &mut Account, pickle: *const c_char,
     VodozemacError::new(0, "Success")
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn accountIdentityKeys(ptr: &mut Account, data: *mut *const CIdentityKeys) -> VodozemacError {
+    let acc = unsafe { &*ptr };
+    let res = match acc.identity_keys() {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+    unsafe {
+        let res2 = CIdentityKeys {
+            ed25519: CString::new(res.ed25519).expect("CString::new failed").into_raw(),
+            curve25519: CString::new(res.curve25519).expect("CString::new failed").into_raw()
+        };
+        *data = &res2.into()// res.as_mut_str().as_ptr()
+    }
+    VodozemacError::new(0, "Success")
+}
 
 

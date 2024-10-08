@@ -47,6 +47,11 @@ impl SessionConfig {
 }
 
 #[repr(C)]
+pub struct CIdentityKeys {
+    pub ed25519: *const c_char,
+    pub curve25519: *const c_char,
+}
+
 pub struct IdentityKeys {
     pub ed25519: String,
     pub curve25519: String,

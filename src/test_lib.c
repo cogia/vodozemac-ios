@@ -18,5 +18,15 @@ int main() {
         printf("Received error string: %s\n", err.message);
     }
 
+    const CIdentityKeys* keys;
+    VodozemacError err2 = accountIdentityKeys(acc, &keys);
+    printf("Received string: %d\n", err2.code);
+    if (err2.code == 0) {
+        printf("Received ed25519: %s\n", keys->ed25519);
+        printf("Received curve25519: %s\n", keys->curve25519);
+    } else {
+        printf("Received error string: %s\n", err2.message);
+    }
+
     return 0;
 }
