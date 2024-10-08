@@ -183,7 +183,7 @@ pub unsafe extern "C" fn accountPickle(ptr: &mut Account, pickle: *const c_char,
 
     unsafe {
         let c_str = CString::new(res).unwrap();
-        *data = c_str.into_raw() // res.as_mut_str().as_ptr()
+        *data = c_str.into_raw()
     }
     VodozemacError::new(0, "Success")
 }
@@ -205,4 +205,43 @@ pub unsafe extern "C" fn accountIdentityKeys(ptr: &mut Account, data: *mut *cons
     VodozemacError::new(0, "Success")
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn accountMaxNumberOfOneTimeKeys(ptr: &mut Account, max: *mut *const u32) -> VodozemacError {
+    let acc = unsafe { &*ptr };
+    unsafe {
+        let res = acc.max_number_of_one_time_keys();
+        *max = &res;// res.as_mut_str().as_ptr()
+    }
+    VodozemacError::new(0, "Success")
+}
 
+#[no_mangle]
+pub unsafe extern "C" fn accountEd25519Key(ptr: &mut Account, data: *mut *const c_char) -> VodozemacError {
+    let acc = unsafe { &*ptr };
+    unsafe {
+        let res = CString::new(acc.ed25519_key()).unwrap();
+        *data = res.into_raw()
+    }
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountCurve25519Key(ptr: &mut Account, data: *mut *const c_char) -> VodozemacError {
+    let acc = unsafe { &*ptr };
+    unsafe {
+        let res = CString::new(acc.curve25519_key()).unwrap();
+        *data = res.into_raw();
+    }
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountSign(ptr: &mut Account, message: *const c_char, data: *mut *const c_char) -> VodozemacError {
+    let acc = unsafe { &*ptr };
+    let local_message = CStr::from_ptr(message).to_str().unwrap();
+    unsafe {
+        let res = CString::new(acc.sign(local_message.to_string())).unwrap();
+        *data = res.into_raw();
+    }
+    VodozemacError::new(0, "Success")
+}
