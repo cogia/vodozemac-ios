@@ -2,8 +2,13 @@ use std::collections::HashMap;
 use vodozemac::base64_decode;
 use vodozemac::olm::{InboundCreationResult, SessionConfig};
 use std::error::Error;
-use super::{session::Session, OlmMessage, CustomError, IdentityKeys, c_str_to_slice_array};
+use std::ffi::{c_char, CStr, CString};
+use std::ptr;
+use super::{session::Session, OlmMessage, CustomError, IdentityKeys, c_str_to_slice_array, VodozemacError};
+use std::string::String;
 
+
+/// cbindgen:no-export
 #[repr(C)]
 pub struct Account {
     inner: vodozemac::olm::Account,
@@ -163,6 +168,25 @@ impl Account {
 #[no_mangle]
 pub unsafe extern "C" fn newAccount() -> *mut Account {
     Box::into_raw(Box::new(Account::new()))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountPickle(ptr: &mut Account, pickle: *const c_char, data: *mut *const c_char) -> VodozemacError {
+    //assert!(!ptr.is_null());
+    let acc = unsafe { &*ptr };
+
+    let c_str = unsafe { CStr::from_ptr(pickle) };
+
+    let res = match acc.pickle(c_str.to_str().unwrap().to_string()) {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+
+    unsafe {
+        let c_str = CString::new(res).unwrap();
+        *data = c_str.into_raw() // res.as_mut_str().as_ptr()
+    }
+    VodozemacError::new(0, "Success")
 }
 
 

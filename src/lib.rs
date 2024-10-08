@@ -90,3 +90,29 @@ impl fmt::Display for CustomError {
 }
 
 impl Error for CustomError {}
+
+
+#[repr(C)]
+pub struct  VodozemacError {
+    code: i32,
+    message: *mut c_char,
+}
+
+impl VodozemacError {
+    fn new(code: i32, message: &str) -> Self {
+        let c_message = CString::new(message).expect("CString::new failed");
+        VodozemacError {
+            code,
+            message: c_message.into_raw(),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn free_string(s: *mut c_char) {
+    unsafe {
+        if !s.is_null() {
+            let _ = CString::from_raw(s);
+        }
+    }
+}
