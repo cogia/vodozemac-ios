@@ -200,7 +200,7 @@ pub unsafe extern "C" fn accountIdentityKeys(ptr: &mut Account, data: *mut *cons
             ed25519: CString::new(res.ed25519).expect("CString::new failed").into_raw(),
             curve25519: CString::new(res.curve25519).expect("CString::new failed").into_raw()
         };
-        *data = &res2.into()// res.as_mut_str().as_ptr()
+        *data = &res2.into()
     }
     VodozemacError::new(0, "Success")
 }
@@ -210,7 +210,7 @@ pub unsafe extern "C" fn accountMaxNumberOfOneTimeKeys(ptr: &mut Account, max: *
     let acc = unsafe { &*ptr };
     unsafe {
         let res = acc.max_number_of_one_time_keys();
-        *max = &res;// res.as_mut_str().as_ptr()
+        *max = &res;
     }
     VodozemacError::new(0, "Success")
 }
@@ -242,6 +242,157 @@ pub unsafe extern "C" fn accountSign(ptr: &mut Account, message: *const c_char, 
     unsafe {
         let res = CString::new(acc.sign(local_message.to_string())).unwrap();
         *data = res.into_raw();
+    }
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountGenerateOneTimeKeys(ptr: &mut Account, number: u32) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let _ = acc.generate_one_time_keys(number);
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountFallbackKeys(ptr: &mut Account) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let _ = acc.generate_fallback_key();
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountMarkedAsPublished(ptr: &mut Account) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let _ = acc.mark_keys_as_published();
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountFromPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *mut Account) -> VodozemacError {
+    let local_pickle = CStr::from_ptr(pickle).to_str().unwrap();
+    let local_password = CStr::from_ptr(password).to_str().unwrap();
+
+    let res = match Account::from_pickle(local_pickle.to_string(), local_password.to_string()) {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+    unsafe {
+        let acc = Box::into_raw(Box::new(res));
+        *ptr = acc;
+    }
+    VodozemacError::new(0, "Success")
+
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountFromLibOlmPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *mut Account) -> VodozemacError {
+    let local_pickle = CStr::from_ptr(pickle).to_str().unwrap();
+    let local_password = CStr::from_ptr(password).to_str().unwrap();
+
+    let res = match Account::from_libolm_pickle(local_pickle.to_string(), local_password.to_string()) {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+    unsafe {
+        let acc = Box::into_raw(Box::new(res));
+        *ptr = acc;
+    }
+    VodozemacError::new(0, "Success")
+
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountOneTimePerKeys(ptr: *mut Account, data: *mut *const c_char) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let res = match acc.one_time_keys() {
+        Ok(value) => serde_json::to_string(&value).unwrap() ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+    unsafe {
+        let res2 = CString::new(res).unwrap();
+        *data = res2.into_raw();
+    }
+    VodozemacError::new(0, "Success")
+
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountCreateOutboundSession(
+    ptr: *mut Account,
+    identity_key: *const c_char,
+    one_time_key: *const c_char,
+    ptr_session_config: *mut SessionConfig,
+    session:  *mut *mut Session
+) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    //c: String,
+    //one_time_key: String,
+    //config: &mut SessionConfig
+    let local_identity_key = CStr::from_ptr(identity_key).to_str().unwrap();
+    let local_one_time_key = CStr::from_ptr(one_time_key).to_str().unwrap();
+
+    let config = unsafe { &mut *ptr_session_config };
+
+
+    let res = match acc.create_outbound_session(local_identity_key.to_string(), local_one_time_key.to_string(), config) {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+    unsafe {
+        let sess = Box::into_raw(Box::new(res));
+        *session = sess;
+    }
+    VodozemacError::new(0, "Success")
+
+}
+
+// fallback_key
+#[no_mangle]
+pub unsafe extern "C" fn accountFallbackKey(
+    ptr: *mut Account,
+    data: *mut *const c_char
+) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let res = match acc.fallback_key() {
+        Ok(value) => serde_json::to_string(&value).unwrap(),
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+
+    unsafe {
+        let res2 = CString::new(res).unwrap();
+        *data = res2.into_raw();
+    }
+
+    VodozemacError::new(0, "Success")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn accountCreateInboundSession(
+    ptr: *mut Account,
+    identity_key: *const c_char,
+    ptr_session_config: *mut OlmMessage,
+    session:  *mut *mut Session,
+    data: *mut *const c_char
+) -> VodozemacError {
+    let acc = unsafe { &mut *ptr };
+    let local_identity_key = CStr::from_ptr(identity_key).to_str().unwrap();
+
+    let olm_message = unsafe { &mut *ptr_session_config };
+
+
+    let res = match acc.create_inbound_session(local_identity_key.to_string(), olm_message) {
+        Ok(value) => value ,
+        Err(error) => return VodozemacError::new(2, error.to_string().as_str())
+    };
+
+    unsafe {
+        let sess = Box::into_raw(Box::new(Session { inner: res.session }));
+        *session = sess;
+    }
+
+    unsafe {
+        let res2 = CString::new(res.plaintext).unwrap();
+        *data = res2.into_raw();
     }
     VodozemacError::new(0, "Success")
 }

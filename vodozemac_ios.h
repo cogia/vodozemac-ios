@@ -10,32 +10,64 @@
 #include <stdlib.h>
 
 
+typedef struct Session Session;
+
 typedef struct VodozemacError {
   int32_t code;
   char *message;
 } VodozemacError;
-
-typedef struct CIdentityKeys {
-  const char *ed25519;
-  const char *curve25519;
-} CIdentityKeys;
-
-typedef struct SessionConfig {
-  uint8_t _version;
-} SessionConfig;
 
 typedef struct OlmMessage {
   const char *ciphertext;
   uint32_t message_type;
 } OlmMessage;
 
+typedef struct SessionConfig {
+  uint8_t _version;
+} SessionConfig;
+
+typedef struct CIdentityKeys {
+  const char *ed25519;
+  const char *curve25519;
+} CIdentityKeys;
+
+struct VodozemacError accountCreateInboundSession(struct Account *ptr,
+                                                  const char *identity_key,
+                                                  struct OlmMessage *ptr_session_config,
+                                                  struct Session **session,
+                                                  const char **data);
+
+struct VodozemacError accountCreateOutboundSession(struct Account *ptr,
+                                                   const char *identity_key,
+                                                   const char *one_time_key,
+                                                   struct SessionConfig *ptr_session_config,
+                                                   struct Session **session);
+
 struct VodozemacError accountCurve25519Key(struct Account *ptr, const char **data);
 
 struct VodozemacError accountEd25519Key(struct Account *ptr, const char **data);
 
+struct VodozemacError accountFallbackKey(struct Account *ptr, const char **data);
+
+struct VodozemacError accountFallbackKeys(struct Account *ptr);
+
+struct VodozemacError accountFromLibOlmPickle(const char *pickle,
+                                              const char *password,
+                                              struct Account **ptr);
+
+struct VodozemacError accountFromPickle(const char *pickle,
+                                        const char *password,
+                                        struct Account **ptr);
+
+struct VodozemacError accountGenerateOneTimeKeys(struct Account *ptr, uint32_t number);
+
 struct VodozemacError accountIdentityKeys(struct Account *ptr, const struct CIdentityKeys **data);
 
+struct VodozemacError accountMarkedAsPublished(struct Account *ptr);
+
 struct VodozemacError accountMaxNumberOfOneTimeKeys(struct Account *ptr, const uint32_t **max);
+
+struct VodozemacError accountOneTimePerKeys(struct Account *ptr, const char **data);
 
 struct VodozemacError accountPickle(struct Account *ptr, const char *pickle, const char **data);
 

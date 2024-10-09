@@ -13,6 +13,16 @@ int main() {
     printf("Received string: %d\n", err.code);
     if (err.code == 0) {
         printf("Received string: %s\n", str);
+        struct Account* acc2;
+        VodozemacError err3 = accountFromPickle(str, "12345678912345678912345678912345", &acc2);
+        if (err3.code == 0) {
+           VodozemacError err4 = accountMarkedAsPublished(acc2);
+           if (err4.code == 0) {
+               printf("Received accountMarkedAsPublished\n");
+           } else {
+                printf("Received error string: %s\n", err4.message);
+           }
+        }
         free_string(str);
     } else {
         printf("Received error string: %s\n", err.message);
