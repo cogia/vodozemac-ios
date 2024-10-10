@@ -10,8 +10,6 @@
 #include <stdlib.h>
 
 
-typedef struct Session Session;
-
 typedef struct VodozemacError {
   int32_t code;
   char *message;
@@ -84,5 +82,29 @@ struct OlmMessage newOlmMessage(uint32_t message_type, const char *ciphertext);
 struct SessionConfig sessionConfigV1(void);
 
 struct SessionConfig sessionConfigV2(void);
+
+struct VodozemacError sessionDecrypt(struct Session *ptr,
+                                     struct OlmMessage *message,
+                                     const char **data);
+
+struct VodozemacError sessionEncrypt(struct Session *ptr,
+                                     char *plaintext,
+                                     const struct OlmMessage **data);
+
+struct VodozemacError sessionFromLibOlmPickle(const char *pickle,
+                                              const char *password,
+                                              struct Session **ptr);
+
+struct VodozemacError sessionFromPickle(const char *pickle,
+                                        const char *password,
+                                        struct Session **ptr);
+
+struct VodozemacError sessionPickle(struct Session *ptr, const char *pickle, const char **data);
+
+struct VodozemacError sessionSessionId(struct Session *ptr, const char **data);
+
+struct VodozemacError sessionSessionMatches(struct Session *ptr,
+                                            struct OlmMessage *ptr_session_config,
+                                            const size_t **data);
 
 #endif  /* common.h */

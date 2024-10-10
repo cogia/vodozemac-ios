@@ -145,10 +145,9 @@ impl Account {
 
         let _message = vodozemac::olm::OlmMessage::from_parts(
             message.message_type.try_into().unwrap(),
-            &(base64_decode(&c_str_to_slice_array(message.ciphertext)).unwrap())
+            &base64_decode(&c_str_to_slice_array(message.ciphertext)).map_err(|err| Box::new(err) as Box<dyn Error>)?
             // &message.ciphertext.as_bytes()
-        )
-            .map_err(|err: _| Box::new(err) as Box<dyn Error>)?;
+        ).map_err(|err: _| Box::new(err) as Box<dyn Error>)?;
 
         if let vodozemac::olm::OlmMessage::PreKey(m) = _message {
             let res = self

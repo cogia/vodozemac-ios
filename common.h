@@ -1,2 +1,2 @@
-struct Account {
-};
+struct Account {};
+struct Session {};
