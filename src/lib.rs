@@ -1,5 +1,7 @@
 mod account;
 mod session;
+mod group_sessions;
+mod sas;
 
 use std::error::Error;
 use std::ffi::{c_char, CStr, CString};

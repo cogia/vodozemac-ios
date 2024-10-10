@@ -94,7 +94,6 @@ impl Session {
     }
 }
 
-
 #[no_mangle]
 pub unsafe extern "C" fn sessionPickle(ptr: &mut Session, pickle: *const c_char, data: *mut *const c_char) -> VodozemacError {
     //assert!(!ptr.is_null());

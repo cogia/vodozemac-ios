@@ -267,7 +267,7 @@ pub unsafe extern "C" fn accountMarkedAsPublished(ptr: &mut Account) -> Vodozema
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn accountFromPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *mut Account) -> VodozemacError {
+pub unsafe extern "C" fn accountFromPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *const Account) -> VodozemacError {
     let local_pickle = CStr::from_ptr(pickle).to_str().unwrap();
     let local_password = CStr::from_ptr(password).to_str().unwrap();
 
@@ -284,7 +284,7 @@ pub unsafe extern "C" fn accountFromPickle(pickle: *const c_char, password: *con
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn accountFromLibOlmPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *mut Account) -> VodozemacError {
+pub unsafe extern "C" fn accountFromLibOlmPickle(pickle: *const c_char, password: *const c_char, ptr:  *mut *const Account) -> VodozemacError {
     let local_pickle = CStr::from_ptr(pickle).to_str().unwrap();
     let local_password = CStr::from_ptr(password).to_str().unwrap();
 

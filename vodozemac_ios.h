@@ -29,6 +29,11 @@ typedef struct CIdentityKeys {
   const char *curve25519;
 } CIdentityKeys;
 
+typedef struct CDecryptedMessage {
+  const char *plaintext;
+  size_t message_index;
+} CDecryptedMessage;
+
 struct VodozemacError accountCreateInboundSession(struct Account *ptr,
                                                   const char *identity_key,
                                                   struct OlmMessage *ptr_session_config,
@@ -51,11 +56,11 @@ struct VodozemacError accountFallbackKeys(struct Account *ptr);
 
 struct VodozemacError accountFromLibOlmPickle(const char *pickle,
                                               const char *password,
-                                              struct Account **ptr);
+                                              const struct Account **ptr);
 
 struct VodozemacError accountFromPickle(const char *pickle,
                                         const char *password,
-                                        struct Account **ptr);
+                                        const struct Account **ptr);
 
 struct VodozemacError accountGenerateOneTimeKeys(struct Account *ptr, uint32_t number);
 
@@ -75,9 +80,63 @@ void free_string(char *s);
 
 uint8_t getVersionSessionConfig(struct SessionConfig *config);
 
+struct VodozemacError groupSessionEncrypt(struct GroupSession *ptr,
+                                          const char *plaintext,
+                                          const char **data);
+
+struct VodozemacError groupSessionFromPickle(const char *pickle,
+                                             const char *password,
+                                             const struct GroupSession **ptr);
+
+struct VodozemacError groupSessionMessageIndex(struct GroupSession *ptr, const size_t **data);
+
+struct VodozemacError groupSessionPickle(struct GroupSession *ptr,
+                                         const char *password,
+                                         const char **data);
+
+struct VodozemacError groupSessionSessionId(struct GroupSession *ptr, const char **data);
+
+struct VodozemacError groupSessionSessionKey(struct GroupSession *ptr, const char **data);
+
+struct VodozemacError inboundGroupSessionDecrypt(struct InboundGroupSession *ptr,
+                                                 const char *ciphertext,
+                                                 const struct CDecryptedMessage **data);
+
+struct VodozemacError inboundGroupSessionExportAt(struct InboundGroupSession *ptr,
+                                                  const size_t *index,
+                                                  const char **data);
+
+struct VodozemacError inboundGroupSessionFirstKnownIndex(struct InboundGroupSession *ptr,
+                                                         const size_t **data);
+
+struct VodozemacError inboundGroupSessionFromLibOlmPickle(const char *pickle,
+                                                          const char *password,
+                                                          const struct InboundGroupSession **ptr);
+
+struct VodozemacError inboundGroupSessionFromPickle(const char *pickle,
+                                                    const char *password,
+                                                    const struct InboundGroupSession **ptr);
+
+struct VodozemacError inboundGroupSessionNew(const char *session_key,
+                                             struct SessionConfig *ptr_session_config,
+                                             const struct InboundGroupSession **ptr);
+
+struct VodozemacError inboundGroupSessionPickle(struct InboundGroupSession *ptr,
+                                                const char *pickle,
+                                                const char **data);
+
+struct VodozemacError inboundGroupSessionSessionId(struct InboundGroupSession *ptr,
+                                                   const char **data);
+
 struct Account *newAccount(void);
 
+struct GroupSession *newGroupSession(struct SessionConfig *ptr_session_config);
+
 struct OlmMessage newOlmMessage(uint32_t message_type, const char *ciphertext);
+
+struct Sas *newSas(void);
+
+struct VodozemacError newSasPublicKey(struct Sas *ptr, const char **data);
 
 struct SessionConfig sessionConfigV1(void);
 
