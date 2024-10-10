@@ -99,6 +99,7 @@ pub unsafe extern "C" fn newSasPublicKey(ptr: *mut Sas, data: *mut *const c_char
 #[no_mangle]
 pub unsafe extern "C" fn newSasDiffieHellman(ptr: *mut Sas, key: *const c_char, data: *mut *const EstablishedSas) -> VodozemacError {
     let sas = unsafe { &mut *ptr };
+    // can not move
     let local_key = CStr::from_ptr(key).to_str().unwrap();
     let res = match sas.diffie_hellman(local_key.to_string()) {
         Ok(value) => value ,
