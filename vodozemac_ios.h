@@ -10,6 +10,8 @@
 #include <stdlib.h>
 
 
+typedef struct Option_Sas Option_Sas;
+
 typedef struct VodozemacError {
   int32_t code;
   char *message;
@@ -76,6 +78,26 @@ struct VodozemacError accountPickle(struct Account *ptr, const char *pickle, con
 
 struct VodozemacError accountSign(struct Account *ptr, const char *message, const char **data);
 
+struct VodozemacError establishedSasBytes(struct EstablishedSas *ptr,
+                                          const char *info,
+                                          const struct SasBytes **data);
+
+struct VodozemacError establishedSasCalculateMac(struct EstablishedSas *ptr,
+                                                 const char *input,
+                                                 const char *info,
+                                                 const char **data);
+
+struct VodozemacError establishedSasCalculateMacInvalidBase64(struct EstablishedSas *ptr,
+                                                              const char *input,
+                                                              const char *info,
+                                                              const char **data);
+
+struct VodozemacError establishedSasVerifyMac(struct EstablishedSas *ptr,
+                                              const char *input,
+                                              const char *info,
+                                              const char *tag,
+                                              const int32_t **data);
+
 void free_string(char *s);
 
 uint8_t getVersionSessionConfig(struct SessionConfig *config);
@@ -136,7 +158,15 @@ struct OlmMessage newOlmMessage(uint32_t message_type, const char *ciphertext);
 
 struct Sas *newSas(void);
 
+struct VodozemacError newSasDiffieHellman(struct Sas *ptr,
+                                          const char *key,
+                                          const struct EstablishedSas **data);
+
 struct VodozemacError newSasPublicKey(struct Sas *ptr, const char **data);
+
+struct VodozemacError sasBytesDecimals(struct SasBytes *ptr, const uint16_t **data, size_t *len);
+
+struct VodozemacError sasBytesEmojiIndices(struct SasBytes *ptr, const uint8_t **data, size_t *len);
 
 struct SessionConfig sessionConfigV1(void);
 
