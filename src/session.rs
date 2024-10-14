@@ -49,7 +49,7 @@ impl Session {
         let message =
             vodozemac::olm::OlmMessage::from_parts(
                 message.message_type.try_into().unwrap(),
-                &base64_decode(&c_str_to_slice_array(message.ciphertext)).unwrap()
+                &base64_decode(&c_str_to_slice_array(message.ciphertext)).unwrap_or_else(|_| Vec::new())
             );
 
         match message {
@@ -80,7 +80,7 @@ impl Session {
         Ok(self.inner.decrypt(&_message).map_err(|err: _| Error::new(Status::GenericFailure, err.to_string().to_owned()))?)*/
         let _message = vodozemac::olm::OlmMessage::from_parts(
             message.message_type.try_into().unwrap(),
-            &base64_decode(&c_str_to_slice_array(message.ciphertext))?
+            &base64_decode(&c_str_to_slice_array(message.ciphertext)).map_err(|err| Box::new(err) as Box<dyn Error>)?
         )
             .map_err(|err: _| Box::new(err) as Box<dyn Error>)?;
 
