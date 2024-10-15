@@ -11,6 +11,7 @@ vodozemac-ios
 ========
 IOS binding for the [Matrix vodozemac](https://github.com/matrix-org/vodozemac) encryption library.
 
+Basically it's an C language library which can be integrated with a Swift and many other languages. 
 
 Installation
 ========
