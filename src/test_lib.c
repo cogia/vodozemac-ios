@@ -38,5 +38,22 @@ int main() {
         printf("Received error string: %s\n", err2.message);
     }
 
+    struct Account* acc2 = newAccount();
+
+    VodozemacError ee2 = accountGenerateOneTimeKeys(acc2, 10);
+    printf("Received error string: %s\n", ee2.message);
+
+    //for(int i = 0; i < 10; i++) {
+    //    const char* key;
+    //    VodozemacError ee3 = accountOneTimeKey(acc2, i, &key);
+    //    printf("Received key: %s\n", key);
+    //}
+
+    for(int i = 0; i < 140; i++) {
+        const unsigned int *amount2;
+        VodozemacError ee4 = accountMaxNumberOfOneTimeKeys(acc2, &amount2);
+        printf("Received amount: %d\n", *amount2);
+    }
+
     return 0;
 }

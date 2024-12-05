@@ -94,7 +94,6 @@ impl Account {
         self.inner.generate_one_time_keys(count.try_into().unwrap());
     }
 
-
     pub fn fallback_key(&self) -> Result<HashMap<String, String>, Box<dyn Error>> {
         let _keys: HashMap<String, String> = self
             .inner
