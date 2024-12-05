@@ -206,11 +206,12 @@ pub unsafe extern "C" fn accountIdentityKeys(ptr: &mut Account, data: *mut *cons
 #[no_mangle]
 pub unsafe extern "C" fn accountMaxNumberOfOneTimeKeys(ptr: &mut Account, max: *mut *const u32) -> VodozemacError {
     let acc = unsafe { &*ptr };
-    unsafe {
-        let res = acc.max_number_of_one_time_keys();
-        *max = &res;
-    }
-    VodozemacError::new(0, "Success")
+           unsafe {
+               let res = acc.max_number_of_one_time_keys();
+               let boxed_res = Box::new(res); // Allocate on the heap
+               *max = Box::into_raw(boxed_res) as *const u32; // Store the raw pointer
+           }
+           VodozemacError::new(0, "Success")
 }
 
 #[no_mangle]
