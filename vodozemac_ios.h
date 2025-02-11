@@ -139,6 +139,10 @@ struct VodozemacError inboundGroupSessionFromPickle(const char *pickle,
                                                     const char *password,
                                                     const struct InboundGroupSession **ptr);
 
+struct VodozemacError inboundGroupSessionImport(const char *session_key,
+                                                struct SessionConfig *ptr_session_config,
+                                                const struct InboundGroupSession **ptr);
+
 struct VodozemacError inboundGroupSessionNew(const char *session_key,
                                              struct SessionConfig *ptr_session_config,
                                              const struct InboundGroupSession **ptr);
@@ -195,5 +199,10 @@ struct VodozemacError sessionSessionId(struct Session *ptr, const char **data);
 struct VodozemacError sessionSessionMatches(struct Session *ptr,
                                             struct OlmMessage *ptr_session_config,
                                             const size_t **data);
+
+void free_session(void *ptr);
+void free_account(void *ptr);
+void free_group_session(void *ptr);
+void free_inbound_group_session(void *ptr);
 
 #endif  /* common.h */

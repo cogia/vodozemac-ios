@@ -6,6 +6,11 @@ mod sas;
 use std::error::Error;
 use std::ffi::{c_char, CStr, CString};
 use std::fmt;
+use vodozemac::olm::{Account, Session};
+use vodozemac::megolm::GroupSession;
+use std::os::raw::c_void;
+use vodozemac::megolm::InboundGroupSession;
+
 
 #[repr(C)]
 pub struct OlmMessage {
@@ -120,6 +125,41 @@ pub extern "C" fn free_string(s: *mut c_char) {
     unsafe {
         if !s.is_null() {
             let _ = CString::from_raw(s);
+        }
+    }
+}
+#[no_mangle]
+pub extern "C" fn free_session(ptr: *mut c_void) {
+    unsafe {
+        if !ptr.is_null() {
+            let _ = Box::from_raw(ptr as *mut Session);
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn free_account(ptr: *mut c_void) {
+    unsafe {
+        if !ptr.is_null() {
+            let _ = Box::from_raw(ptr as *mut Account);
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn free_group_session(ptr: *mut c_void) {
+    unsafe {
+        if !ptr.is_null() {
+            let _ = Box::from_raw(ptr as *mut GroupSession);
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn free_inbound_group_session(ptr: *mut c_void) {
+    unsafe {
+        if !ptr.is_null() {
+            let _ = Box::from_raw(ptr as *mut InboundGroupSession);
         }
     }
 }
