@@ -163,9 +163,16 @@ pub unsafe extern "C" fn sessionSessionMatches(ptr: *mut Session, ptr_session_co
 
     let res = sess.session_matches(olm_message) as usize;
 
+    // Allocate memory on the heap for the result
+    let boxed_res = Box::new(res);
+    // Get a raw pointer from the Box
+    let raw_res_ptr = Box::into_raw(boxed_res);
+
     unsafe {
-        *data = &res;
+        // Store the raw pointer in `data`
+        *data = raw_res_ptr;
     }
+
     VodozemacError::new(0, "Success")
 }
 
