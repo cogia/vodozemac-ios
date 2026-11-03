@@ -120,7 +120,7 @@ impl Account {
         one_time_key: String,
         config: &mut SessionConfig
     ) -> Result<Session, Box<dyn Error>> {
-        let _config = if config.version() == 2 { vodozemac::megolm::SessionConfig::version_2() } else { vodozemac::megolm::SessionConfig::version_1() };
+        let session_config = if config.version() == 2 { vodozemac::megolm::SessionConfig::version_2() } else { vodozemac::megolm::SessionConfig::version_1() };
 
         let identity_key =
             vodozemac::Curve25519PublicKey::from_base64(&identity_key).map_err(|err: _| Box::new(err) as Box<dyn Error>)?;
@@ -128,7 +128,7 @@ impl Account {
             vodozemac::Curve25519PublicKey::from_base64(&one_time_key).map_err(|err: _| Box::new(err) as Box<dyn Error>)?;
         let session = self
             .inner
-            .create_outbound_session(SessionConfig::version_2(), identity_key, one_time_key);
+            .create_outbound_session(session_config, identity_key, one_time_key);
 
         Ok(Session { inner: session })
     }
